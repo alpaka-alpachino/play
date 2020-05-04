@@ -1,4 +1,4 @@
-package main
+package store
 
 import (
 	"database/sql"
@@ -24,7 +24,7 @@ const (
 	serviceName  = "ServiceName"
 )
 
-func newDBmetric() *DBmetric {
+func NewDBmetric() *DBmetric {
 
 	s := fmt.Sprintf(sourceFormat, os.Getenv("PG_USER"), os.Getenv("PG_PASS"), os.Getenv("PG_DB"))
 

@@ -1,18 +1,14 @@
-package main
+package web
 
 import (
-	"flag"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/play/store"
 )
 
-func main() {
-	address := flag.String("address", ":1433", "address of server")
-	flag.Parse()
-	dbHandling := newDBmetric()
-	defer dbHandling.db.Close()
+func newRouter() *mux.Router {
+	dbHandling := store.NewDBmetric()
 
 	router := mux.NewRouter()
 	router.Use(Middleware)
@@ -24,8 +20,6 @@ func main() {
 	api.HandleFunc("/{from}/{to}/status", dbHandling.HandledRequestsForDate).Methods(http.MethodGet)
 	api.HandleFunc("/{ServiceName}", dbHandling.GetMetricsForService).Methods(http.MethodGet)
 
-	if err := http.ListenAndServe(*address, router); err != nil {
-		log.Fatal(err.Error())
-	}
+	return router
 
 }
