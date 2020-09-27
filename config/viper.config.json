@@ -1,0 +1,12 @@
+{
+    "postgres" : {
+        "Host": "postgres",
+        "Port": "5432",
+        "DB": "pfdb",
+        "User": "pf_user",
+        "Pass": "SomePassword"
+    },
+    "tgBOT": {
+        "TgbotapiKey": "1028414370:AAEwam-6oIql17zlqiMsxtR07_GJ8H72RtU"
+    }
+}

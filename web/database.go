@@ -1,4 +1,4 @@
-package store
+package web
 
 import (
 	"database/sql"
@@ -12,9 +12,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"github.com/play/store"
 )
 
-//DBmetric - stuct for working with metrics in database
 type DBmetric struct {
 	db *sql.DB
 }
@@ -46,10 +46,9 @@ func NewDBmetric() *DBmetric {
 	}
 }
 
-//MetricsCreate record metris from endpoints to db
 func (database *DBmetric) MetricsCreate(w http.ResponseWriter, r *http.Request) {
 
-	var metrics Metrics
+	var metrics store.Metrics
 	var Status int
 
 	err := json.NewDecoder(r.Body).Decode(&metrics)
@@ -81,7 +80,6 @@ func (database *DBmetric) MetricsCreate(w http.ResponseWriter, r *http.Request) 
 
 }
 
-//BadRequestHandler record failed requests
 func (database *DBmetric) BadRequestHandler(w http.ResponseWriter, r *http.Request) {
 
 	var Status int
@@ -106,10 +104,9 @@ func (database *DBmetric) BadRequestHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-//GetMetricsForService gets all metrics for the collection unit
 func (database *DBmetric) GetMetricsForService(w http.ResponseWriter, r *http.Request) {
 
-	var metrics Metrics
+	var metrics store.Metrics
 
 	vars := mux.Vars(r)
 	metrics.ServiceName = vars[serviceName]
@@ -124,10 +121,10 @@ func (database *DBmetric) GetMetricsForService(w http.ResponseWriter, r *http.Re
 
 	defer rows.Close()
 
-	ms := make([]*Metrics, 0)
+	ms := make([]*store.Metrics, 0)
 
 	for rows.Next() {
-		m := new(Metrics)
+		m := new(store.Metrics)
 		err := rows.Scan(&m.ServiceName, &m.MetricValue, &m.MetricName, &m.Time, &m.Status)
 		if err != nil {
 			log.Fatal(err)
@@ -147,10 +144,9 @@ func (database *DBmetric) GetMetricsForService(w http.ResponseWriter, r *http.Re
 	}
 }
 
-//GetSuccessNumberFromAll get number of successfully handled requests from all nodes
 func (database *DBmetric) GetSuccessNumberFromAll(w http.ResponseWriter, r *http.Request) {
 
-	var metrics Metrics
+	var metrics store.Metrics
 
 	metrics.Status = 200
 
@@ -176,10 +172,9 @@ func (database *DBmetric) GetSuccessNumberFromAll(w http.ResponseWriter, r *http
 	fmt.Fprintf(w, "Number of successfully handled requests from all nodes is %d\n", count)
 }
 
-//GetSuccessAndFailedForOne get number of successfully handled requests and number of failed requests from web server
 func (database *DBmetric) GetSuccessAndFailedForOne(w http.ResponseWriter, r *http.Request) {
 
-	var metrics Metrics
+	var metrics store.Metrics
 
 	vars := mux.Vars(r)
 	metrics.ServiceName = vars[serviceName]
@@ -225,10 +220,9 @@ func (database *DBmetric) GetSuccessAndFailedForOne(w http.ResponseWriter, r *ht
 	fmt.Fprintf(w, "Number of failed requests from all nodes is %d\n", countf)
 }
 
-//HandledRequestsForDate get number of successfully handled requests and number of failed requests from web server  from 1st November 2019 to 2nd January 2020 for example
 func (database *DBmetric) HandledRequestsForDate(w http.ResponseWriter, r *http.Request) {
 
-	var metrics Metrics
+	var metrics store.Metrics
 
 	vars := mux.Vars(r)
 
